@@ -11,7 +11,7 @@
       stdenv.mkDerivation {
         name = "nx";
         src = self;
-        buildPhase = "./nx test";
+        buildPhase = "cp -v src/nx ./nx";
         installPhase = "TMP=$(mktemp -d) && cp nx $TMP/nx && chmod 555 $TMP/nx && mkdir -p $out/bin && install -t $out/bin $TMP/nx";
       };
 
