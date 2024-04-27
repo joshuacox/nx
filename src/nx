@@ -122,21 +122,24 @@ parse_opts () {
 }
 
 usage () {
+  printf "nx - one less letter to type than nix\n"
+  printf "nx is an opinionated tool I use to manage my NixOS installations.\n"
+  printf "by default it uses a directory in your home '~/.nx'\n"
   printf "USAGE:\n"
-  printf "search THING:\n$0 s THING\n"
-  printf "apply-colmena:\n$0 ac GROUP\n"
-  printf "apply-system:\n$0 as\n"
-  printf "apply-user:\n$0 au\n"
-  printf "update-system:\n$0 us\n"
-  printf "update-user:\n$0 uu\n"
-  printf "garbage-collector:\n$0 gc\n"
-  printf "git-commit-am:\n$0 am\n"
-  printf "edit-config:\n$0 ec\n"
-  printf "edit-flake:\n$0 ef\n"
-  printf "edit-group-flake:\n$0 ef GROUP\n"
-  printf "edit-user-config:\n$0 eu\n"
-  printf "optimize:\n$0 o\n"
-  printf "full-auto:\n$0 auto\n"
+  printf "apply-colmena:\t\tnx ac GROUP\n"
+  printf "apply-system:\t\tnx as\n"
+  printf "git-commit-am:\t\tnx am\n"
+  printf "apply-user:\t\tnx au\n"
+  printf "full-auto:\t\tnx auto\n"
+  printf "edit-config:\t\tnx ec\n"
+  printf "edit-flake:\t\tnx ef\n"
+  printf "edit-group-flake:\tnx ef GROUP\n"
+  printf "edit-user-config:\tnx eu\n"
+  printf "garbage-collector:\tnx gc\n"
+  printf "optimize:\t\tnx o\n"
+  printf "search PACKAGE:\t\tnx s PACKAGE\n"
+  printf "update-system:\t\tnx us\n"
+  printf "update-user:\t\tnx uu\n"
 }
 
 edit_config () {
