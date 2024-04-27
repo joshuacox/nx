@@ -1,6 +1,5 @@
 #!/bin/sh
-#set -ex
-#set -e
+: ${NX_DIR:="$HOME/.nx"}
 
 parse_opts () {
   # If cmd empty enter interactive session
@@ -142,24 +141,24 @@ usage () {
 
 edit_config () {
   THIS_HOST=$(hostname)
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST/configuration.nix"
+  SRC="${NX_DIR}/hosts/$THIS_HOST/configuration.nix"
   $EDITOR $SRC
 }
 
 edit_flake () {
   if [ $# -eq 1 ]; then
     THIS_GROUP=$1
-    SRC="$HOME/.nix-vault/groups/$THIS_GROUP/flake.nix"
+    SRC="${NX_DIR}/groups/$THIS_GROUP/flake.nix"
   else
     THIS_HOST=$(hostname)
-    SRC="$HOME/.nix-vault/hosts/$THIS_HOST/flake.nix"
+    SRC="${NX_DIR}/hosts/$THIS_HOST/flake.nix"
   fi
   $EDITOR $SRC
 }
 
 edit_user_config () {
   THIS_HOST=$(hostname)
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST/users/$USER/home.nix"
+  SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
   $EDITOR $SRC
 }
 
@@ -167,8 +166,8 @@ defunct_apply_user () {
   check_git_status
   THIS_GROUP=users
   THIS_HOST=$(hostname)
-  #SRC="$HOME/.nix-vault/hosts/$THIS_HOST/users/$USER"
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST"
+  #SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER"
+  SRC="${NX_DIR}/hosts/$THIS_HOST"
   set -x
   cd $SRC
   echo " This appears to be broken https://nix-community.github.io/home-manager/index.xhtml#sec-flakes-nixos-module"
@@ -182,7 +181,7 @@ apply_user () {
   check_git_status
   THIS_GROUP=users
   THIS_HOST=$(hostname)
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST/users/$USER/home.nix"
+  SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
   TARGET="$HOME/.config/home-manager/home.nix"
   CMD="home-manager switch"
   set -x
@@ -198,7 +197,7 @@ apply_user () {
 update_system () {
   check_git_status
   THIS_HOST=$(hostname)
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST"
+  SRC="${NX_DIR}/hosts/$THIS_HOST"
   cd $SRC
   set -x
   sudo nix-channel --update
@@ -214,7 +213,7 @@ apply_colmena () {
   fi
   check_git_status
   THIS_GROUP=$1
-  SRC="$HOME/.nix-vault/groups/$THIS_GROUP"
+  SRC="${NX_DIR}/groups/$THIS_GROUP"
   cd $SRC
   set -x
   colmena apply switch
@@ -224,7 +223,7 @@ apply_colmena () {
 apply_system () {
   check_git_status
   THIS_HOST=$(hostname)
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST"
+  SRC="${NX_DIR}/hosts/$THIS_HOST"
   cd $SRC
   set -x
   sudo nixos-rebuild switch --flake '.#'
@@ -237,7 +236,7 @@ old_apply_system () {
   THIS_USER=root
   THIS_GROUP=root
   THIS_HOST=$(hostname)
-  SRC="$HOME/.nix-vault/hosts/$THIS_HOST"
+  SRC="${NX_DIR}/hosts/$THIS_HOST"
   TARGET="/etc/nixos"
   CMD="sudo nixos-rebuild switch"
   diff $SRC $TARGET
