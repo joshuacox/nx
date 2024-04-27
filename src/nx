@@ -259,6 +259,7 @@ full_auto () {
   nix-store --optimize
 }
 check_git_status () {
+  cd "${NX_DIR}"
   if output=$(git status --porcelain) && [ -z "$output" ]; then
     # Working directory clean
     echo "clean"
@@ -266,12 +267,12 @@ check_git_status () {
     # Uncommitted changes
     echo "There are uncommitted changes!"
     if [ "$use_the_force_luke" = 'true' ]; then
-      echo using the force
+      echo 'using the force'
       commy=$(printf "force lock\n%s\n" $(date -I))
       commy+="$(git diff)"
       git commit -am "${commy}"
     else
-      echo use --force to override
+      echo 'use --force to override'
       exit 1
     fi
   fi
