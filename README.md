@@ -45,3 +45,5 @@ in
   ];
 }
 ```
+
+There is a full [example repo](https://github.com/joshuacox/nx_example) showing a working setup with an example laptop host (laptop1), and an example group (example_group) which shows an example colmena remote setup of k3s with mixed x86_64 hosts and aarch64 (rpi4) hosts.
