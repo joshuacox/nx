@@ -122,6 +122,8 @@ likewise an apply for group as well:
 
 `nx ac GROUP`  colmena apply in the groups directory
 
+So the groups directory are meant to be remote hosts to be managed with colmena, while the hosts directory is meant for local systems where hostname should return the name of the directory in the hosts directory for the local machine about to be built on.
+
 ### inspiraton
 
 This was inspired by [Wil T's Nix Guides](https://nixos.wiki/wiki/Wil_T_Nix_Guides)
