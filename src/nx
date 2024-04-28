@@ -90,6 +90,8 @@ parse_opts () {
   elif [[ $RAISON == "eu" ]]; then
     edit_user_config $@
   elif [[ $RAISON == "am" ]]; then
+    cd "${NX_DIR}"
+    set -x
     git commit -am "$1" 
   elif [[ $RAISON == "us" ]]; then
     update_system
