@@ -53,7 +53,9 @@ Then I added another machine that I was installing nix on, to separate things ou
 
 There are a few convenience functions added like:
 
-`nx s gimp` which simplifies the lengthy amount of options that must be fed to nix to get it to search.
+`nx s gimp` which simplifies the lengthy amount of options that must be fed to nix to get it to search. for example the equivalent nix is:
+
+`nix --extra-experimental-features "nix-command flakes" search nixpkgs gimp`
 
 `nx gc` garbage collection 
 `nx o` optimizations (*also does a garbage collect before-hand)
@@ -78,7 +80,11 @@ This was inspired by [Wil T's Nix Guides](https://nixos.wiki/wiki/Wil_T_Nix_Guid
 
 And then adding in the colmena setup using these [blog posts](https://haseebmajid.dev/posts/2023-11-30-til-how-to-use-sops-nix-with-colmena/)
 
-I have considered adding in long form options i.e. edit-config instead of just ec, but the whole point of this script is to save myself keystrokes so for now I'm leaving them out.  Pull requests welcome!
+This script is meant to save keystrokes first and foremost!
+
+I have considered adding in long form options i.e. edit-config instead of just ec, but the whole point of this script is to save myself keystrokes so for now I'm leaving them out.
+
+Pull requests welcome!
 
 ### installation
 
