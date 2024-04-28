@@ -345,18 +345,18 @@ croak () {
   shift
   croak="$@"
 
-  if [[ -z $error_report_log ]]; then
+  if [ -z $error_report_log ]; then
     horizontal_rule
     printf 'Error report log - %s\n' $error_report_log
   fi
 
   horizontal_rule
-  if [[ "$VERBOSITY" -ge "$croak_lvl" ]] ; then
-    if [[ "$croak_lvl" -le 20 ]] ; then
+  if [ "$VERBOSITY" -ge "$croak_lvl" ] ; then
+    if [ "$croak_lvl" -le 20 ] ; then
       count_croak=0
-      while [[ "$count_croak" -lt "$croak_lvl" ]]; do
+      while [ "$count_croak" -lt "$croak_lvl" ]; do
         printf '#'
-        ((++count_croak))
+	count_croak=$((count_croak+1))
       done
       printf '%s\n'  "$croak"
     else
