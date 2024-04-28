@@ -96,7 +96,7 @@ parse_opts () {
   elif [[ $RAISON == "uu" ]]; then
     nix-channel --update
   elif [[ $RAISON == "o" ]]; then
-    time nix-store --optimize
+    time optimizer
   elif [[ $RAISON == "test" ]]; then
     echo ok
     exit 0
@@ -136,7 +136,7 @@ usage () {
   printf "edit-group-flake:\tnx ef GROUP\n"
   printf "edit-user-config:\tnx eu\n"
   printf "garbage-collector:\tnx gc\n"
-  printf "optimize:\t\tnx o\n"
+  printf "optimize+gc:\t\tnx o\n"
   printf "search PACKAGE:\t\tnx s PACKAGE\n"
   printf "update-system:\t\tnx us\n"
   printf "update-user:\t\tnx uu\n"
@@ -291,6 +291,11 @@ garbage_collector ()  {
   #  sudo rm $(readlink "$link")
   #done
   nix-collect-garbage -d
+}
+
+optimizer () {
+  nix-store --optimize
+  garbage_collector $@
 }
 
 squawk () {

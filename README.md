@@ -1,6 +1,33 @@
 # nx
 
+nx is one less letter to type than nix!
+
 nx is a helper shell wrapper around some common tasks I do on my NixOS systems.
+
+### usage
+
+nx -h 
+
+```
+nx - one less letter to type than nix
+nx is an opinionated tool I use to manage my NixOS installations.
+by default it uses a directory in your home '~/.nx'
+USAGE:
+apply-colmena:          nx ac GROUP
+apply-system:           nx as
+git-commit-am:          nx am
+apply-user:             nx au
+full-auto:              nx auto
+edit-config:            nx ec
+edit-flake:             nx ef
+edit-group-flake:       nx ef GROUP
+edit-user-config:       nx eu
+garbage-collector:      nx gc
+optimize and gc:        nx o
+search PACKAGE:         nx s PACKAGE
+update-system:          nx us
+update-user:            nx uu
+```
 
 ### main concepts 
 
@@ -29,7 +56,7 @@ There are a few convenience functions added like:
 `nx s gimp` which simplifies the lengthy amount of options that must be fed to nix to get it to search.
 
 `nx gc` garbage collection 
-`nx gc` optimizations
+`nx o` optimizations (*also does a garbage collect before-hand)
 
 `nx auto` which queues up `us as uu au gc o` as a full-update macro.  
 
@@ -51,30 +78,7 @@ This was inspired by [Wil T's Nix Guides](https://nixos.wiki/wiki/Wil_T_Nix_Guid
 
 And then adding in the colmena setup using these [blog posts](https://haseebmajid.dev/posts/2023-11-30-til-how-to-use-sops-nix-with-colmena/)
 
-### usage
-
-nx -h 
-
-```
-nx - one less letter to type than nix
-nx is an opinionated tool I use to manage my NixOS installations.
-by default it uses a directory in your home '~/.nx'
-USAGE:
-apply-colmena:          nx ac GROUP
-apply-system:           nx as
-git-commit-am:          nx am
-apply-user:             nx au
-full-auto:              nx auto
-edit-config:            nx ec
-edit-flake:             nx ef
-edit-group-flake:       nx ef GROUP
-edit-user-config:       nx eu
-garbage-collector:      nx gc
-optimize:               nx o
-search PACKAGE:         nx s PACKAGE
-update-system:          nx us
-update-user:            nx uu
-```
+I have considered adding in long form options i.e. edit-config instead of just ec, but the whole point of this script is to save myself keystrokes so for now I'm leaving them out.  Pull requests welcome!
 
 ### installation
 
