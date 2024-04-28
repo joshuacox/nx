@@ -43,7 +43,7 @@ The first to be made were the apply-system.sh and apply-user.sh from [Wil T's Ni
 and
 `nx au`
 
-And then then update scripts:
+And then the update scripts:
 
 `nx us`
 and
