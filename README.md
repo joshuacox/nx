@@ -4,6 +4,10 @@ nx is one less letter to type than nix!
 
 nx is a helper shell wrapper around some common tasks I do on my NixOS systems.
 
+and if nx doesn't recognize the command it passes it nix anyhow!
+
+So you might as well just type `nx`
+
 ### usage
 
 nx -h 
