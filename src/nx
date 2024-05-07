@@ -76,7 +76,7 @@ parse_opts () {
   if [[ $RAISON == "s" ]]; then
     nix_search $@
   elif [[ $RAISON == "ac" ]]; then
-    time apply_colmena $@
+    time apply_colmen $@
   elif [[ $RAISON == "as" ]]; then
     time apply_system $@
   elif [[ $RAISON == "au" ]]; then
@@ -228,6 +228,9 @@ apply_colmena () {
   check_git_status
   if [ $# -lt 1 ]; then
     echo 'usage: ./nx ac $GROUP'
+    echo 'apply-colmena-on-host:  nx ac GROUP host1'
+    echo 'apply-colmena-on-hosts: nx ac GROUP host2,host3'
+    echo 'apply-colmena-on-tiered-groups-of-hosts: nx ac GROUP host1 host2,host3 host4,host5,host6'
     exit 1
   elif [ $# -eq 1 ]; then
     worker_colmena "$1"
