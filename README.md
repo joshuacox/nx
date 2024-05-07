@@ -18,6 +18,7 @@ nx is an opinionated tool I use to manage my NixOS installations.
 by default it uses a directory in your home '~/.nx'
 USAGE:
 apply-colmena:          nx ac GROUP
+apply-colmena-on-host:  nx ac GROUP --reboot host1
 apply-colmena-on-host:  nx ac GROUP host1
 apply-colmena-on-hosts: nx ac GROUP host2,host3
 apply-system:           nx as
