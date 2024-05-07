@@ -140,4 +140,6 @@ This script is meant to save keystrokes first and foremost!
 
 I have considered adding in long form options i.e. edit-config instead of just ec, but the whole point of this script is to save myself keystrokes so for now I'm leaving them out.
 
+I'd like to add that this shell script flys directly in the face of the recommendations about abbreviations [here](https://nixos.org/manual/nix/stable/contributing/cli-guideline). While I agree with their decision, again the purpose of this was to save me keystrokes, and deduplication in my shell history.
+
 Pull requests welcome!
