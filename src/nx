@@ -129,6 +129,8 @@ usage () {
   printf "by default it uses a directory in your home '~/.nx'\n"
   printf "USAGE:\n"
   printf "apply-colmena:\t\tnx ac GROUP\n"
+  printf "apply-colmena:\t\tnx ac GROUP host1,host2,host3\n"
+  printf "apply-colmena:\t\tnx ac GROUP host1 host2,host3 host4,host5,host6\n"
   printf "apply-system:\t\tnx as\n"
   printf "git-commit-am:\t\tnx am\n"
   printf "apply-user:\t\tnx au\n"
@@ -186,6 +188,17 @@ apply_user () {
   check_git_status
   THIS_GROUP=users
   THIS_HOST=$(hostname)
+  if [ -f "${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix" ]; then
+    SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
+  elif [ -f "${NX_DIR}/users/$USER/home.nix" ]; then
+    SRC="${NX_DIR}/users/$USER/home.nix"
+  else
+    SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
+    ls -alh $SRC
+    SRC="${NX_DIR}/users/$USER/home.nix"
+    ls -alh $SRC
+    echo 'Cannot find user home.nix'
+  fi
   SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
   TARGET="$HOME/.config/home-manager/home.nix"
   CMD="home-manager switch"
@@ -212,16 +225,36 @@ update_system () {
 }
 
 apply_colmena () {
-  if [ $# -ne 1 ]; then
+  check_git_status
+  if [ $# -lt 1 ]; then
     echo 'usage: ./nx ac $GROUP'
     exit 1
+  elif [ $# -eq 1 ]; then
+    worker_colmena "$1"
+  elif [ $# -gt 1 ]; then
+    uber_group="$1"
+    shift
+    while [ ! -z "$1" ]; do
+      worker_colmena $uber_group "$1"
+      shift
+    done
+  else
+    echo 'unknown conditions bailing out'
+    exit 1
   fi
-  check_git_status
+}
+
+worker_colmena () {
   THIS_GROUP=$1
   SRC="${NX_DIR}/groups/$THIS_GROUP"
+  if [ -z $2 ]; then
+    on_args=""
+  else
+    on_args="--on $2"
+  fi
   cd $SRC
   set -x
-  colmena apply switch
+  colmena apply switch $on_args
   set +x
 }
 

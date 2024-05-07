@@ -18,6 +18,8 @@ nx is an opinionated tool I use to manage my NixOS installations.
 by default it uses a directory in your home '~/.nx'
 USAGE:
 apply-colmena:          nx ac GROUP
+apply-colmena-on-host:  nx ac GROUP host1
+apply-colmena-on-hosts: nx ac GROUP host2,host3
 apply-system:           nx as
 git-commit-am:          nx am
 apply-user:             nx au
@@ -31,6 +33,10 @@ optimize and gc:        nx o
 search PACKAGE:         nx s PACKAGE
 update-system:          nx us
 update-user:            nx uu
+# Or to do the apply in mini groups
+# separate hosts in a group with a comma
+# and groups with a space
+apply-colmena-on-hosts: nx ac GROUP host1 host2,host3 host4,host5,host6
 ```
 
 ### installation
