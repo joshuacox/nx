@@ -137,9 +137,9 @@ This was inspired by [Wil T's Nix Guides](https://nixos.wiki/wiki/Wil_T_Nix_Guid
 
 And then adding in the colmena setup using these [blog posts](https://haseebmajid.dev/posts/2023-11-30-til-how-to-use-sops-nix-with-colmena/)
 
-This script is meant to save keystrokes first and foremost!
-
 I have considered adding in long form options i.e. edit-config instead of just ec, but the whole point of this script is to save myself keystrokes so for now I'm leaving them out.
+
+This script is meant to save keystrokes first and foremost!  And was modeled after the kubectl pluging for oh-my-zsh, while this might have been implemented as an oh-my-zsh plugin I wanted to be useful to other shell users as well.  There is nothing really special going in this script so I just stuck to posix compliant sh, this may change in the future, but for now I just want shortcuts to some of the commands I use in maintaining NixOS any real development is probably best left to the upper level tools themselves (e.g. colmena and nix itself).
 
 I'd like to add that this shell script flys directly in the face of the recommendations about abbreviations [here](https://nixos.org/manual/nix/stable/contributing/cli-guideline). While I agree with their decision, again the purpose of this was to save me keystrokes, and deduplication in my shell history.
 
