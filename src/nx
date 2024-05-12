@@ -229,6 +229,7 @@ update_system () {
 }
 
 apply_colmena () {
+  set -x
   check_git_status
   if [ $# -lt 1 ]; then
     echo 'usage: ./nx ac $GROUP'
@@ -252,7 +253,7 @@ apply_colmena () {
 }
 
 worker_colmena () {
-  if [ ${reboot} -eq 'true' ]; then
+  if [ "${reboot}" = 'true' ]; then
     reboot_arg='--reboot'
   else
     reboot_arg=''
