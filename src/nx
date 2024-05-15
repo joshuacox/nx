@@ -12,8 +12,8 @@ parse_opts () {
 
   ORIGINAL_OPTS=$@
   # Execute getopt on the arguments passed to this program, identified by the special character $@
-  short_opts="fhvyV:"
-  long_opts="help,force,yes,verbose,verbosity:,debug,reboot"
+  short_opts="cfhvyV:"
+  long_opts="commit,help,force,yes,verbose,verbosity:,debug,reboot"
   PARSED_OPTIONS=$(getopt --alternative -n "$0" -o "$short_opts" --long "$long_opts" -- "$@")
 
   #Bad arguments, something has gone wrong with the getopt command.
@@ -41,6 +41,9 @@ parse_opts () {
         shift;;
       --debug)
         debug=true
+        shift;;
+      -c|--commit)
+        commit=true
         shift;;
       --reboot)
         reboot=true
@@ -309,6 +312,7 @@ full_auto () {
   garbage_collector $@
   nix-store --optimize
 }
+
 check_git_status () {
   cd "${NX_DIR}"
   if output=$(git status --porcelain) && [ -z "$output" ]; then
@@ -317,13 +321,14 @@ check_git_status () {
   else 
     # Uncommitted changes
     echo "There are uncommitted changes!"
-    if [ "$use_the_force_luke" = 'true' ]; then
-      echo 'using the force'
+    if [ "$commit" = 'true' ]; then
       commy=$(printf "force lock\n%s\n" $(date -I))
       commy+="$(git diff)"
       git commit -am "${commy}"
+    elif [ "$use_the_force_luke" = 'true' ]; then
+      echo 'using the force'
     else
-      echo 'use --force to override'
+      echo 'use --force or --commit to override'
       exit 1
     fi
   fi
