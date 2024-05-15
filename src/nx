@@ -13,7 +13,7 @@ parse_opts () {
   ORIGINAL_OPTS=$@
   # Execute getopt on the arguments passed to this program, identified by the special character $@
   short_opts="fhvyV:"
-  long_opts="help,force,yes,verbose,verbosity:,debug"
+  long_opts="help,force,yes,verbose,verbosity:,debug,reboot"
   PARSED_OPTIONS=$(getopt --alternative -n "$0" -o "$short_opts" --long "$long_opts" -- "$@")
 
   #Bad arguments, something has gone wrong with the getopt command.
