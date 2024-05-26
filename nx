@@ -220,10 +220,10 @@ apply_user () {
 }
 
 update_system () {
-  check_git_status
   THIS_HOST=$(hostname)
   SRC="${NX_DIR}/hosts/$THIS_HOST"
   cd $SRC
+  sudo rm -v $SRC/flake.lock
   set -x
   sudo nix-channel --update
   nix flake update
