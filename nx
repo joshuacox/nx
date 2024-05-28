@@ -1,5 +1,15 @@
 #!/bin/sh
-: ${NX_DIR:="$HOME/.nx"}
+: ${NX_DIR:="${HOME}/.nx"}
+: ${VERBOSITY:=0}
+
+set_verbosity () {
+  if [ ${1} -gt 0 ]; then
+    VERBOSITY=0
+  else
+    VERBOSITY=${1}
+  fi
+  squawk 5 " verbosity is now ${VERBOSITY}"
+}
 
 parse_opts () {
   # If cmd empty enter interactive session
@@ -157,36 +167,44 @@ usage () {
 }
 
 edit_config () {
-  THIS_HOST=$(hostname)
-  SRC="${NX_DIR}/hosts/$THIS_HOST/configuration.nix"
-  $EDITOR $SRC
+  find_flake_nix_dir
+  SRC="${flake_nix_dir}/configuration.nix"
+  ${EDITOR} ${SRC}
 }
 
 edit_flake () {
   if [ $# -eq 1 ]; then
     THIS_GROUP=$1
-    SRC="${NX_DIR}/groups/$THIS_GROUP/flake.nix"
+    SRC="${NX_DIR}/groups/${THIS_GROUP}/flake.nix"
   else
-    THIS_HOST=$(hostname)
-    SRC="${NX_DIR}/hosts/$THIS_HOST/flake.nix"
+    find_flake_nix_dir
+    SRC="${flake_nix_dir}/flake.nix"
   fi
-  $EDITOR $SRC
+  ${EDITOR} ${SRC}
 }
 
 edit_user_config () {
-  THIS_HOST=$(hostname)
-  SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
-  $EDITOR $SRC
+  find_flake_nix_dir
+  USER_DIR="${flake_nix_dir}/users/${USER}"
+  if [ ! -d ${USER_DIR} ]; then
+    USER_DIR="${NX_DIR}/users/${USER}"
+    if [ ! -d ${USER_DIR} ]; then
+      echo "cannot find user dir, bailing out"
+      exit 1
+    fi
+  fi
+  SRC="${USER_DIR}/home.nix"
+  ${EDITOR} ${SRC}
 }
 
 defunct_apply_user () {
   check_git_status
   THIS_GROUP=users
-  THIS_HOST=$(hostname)
-  #SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER"
-  SRC="${NX_DIR}/hosts/$THIS_HOST"
+  get_this_host
+  #SRC="${NX_DIR}/hosts/${THIS_HOST}/users/$USER"
+  SRC="${NX_DIR}/hosts/${THIS_HOST}"
   set -x
-  cd $SRC
+  cd ${SRC}
   echo " This appears to be broken https://nix-community.github.io/home-manager/index.xhtml#sec-flakes-nixos-module"
   sleep 3
   exit 1
@@ -197,36 +215,44 @@ defunct_apply_user () {
 apply_user () {
   check_git_status
   THIS_GROUP=users
-  THIS_HOST=$(hostname)
-  if [ -f "${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix" ]; then
-    SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
-  elif [ -f "${NX_DIR}/users/$USER/home.nix" ]; then
-    SRC="${NX_DIR}/users/$USER/home.nix"
+  get_this_host
+  if [ -f "${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix" ]; then
+    SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
+  elif [ -f "${NX_DIR}/users/${USER}/home.nix" ]; then
+    SRC="${NX_DIR}/users/${USER}/home.nix"
   else
-    SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
-    ls -alh $SRC
-    SRC="${NX_DIR}/users/$USER/home.nix"
-    ls -alh $SRC
+    SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
+    ls -alh ${SRC}
+    SRC="${NX_DIR}/users/${USER}/home.nix"
+    ls -alh ${SRC}
     echo 'Cannot find user home.nix'
   fi
-  SRC="${NX_DIR}/hosts/$THIS_HOST/users/$USER/home.nix"
-  TARGET="$HOME/.config/home-manager/home.nix"
+  SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
+  TARGET="${HOME}/.config/home-manager/home.nix"
   CMD="home-manager switch"
   set -x
-  diff $SRC $TARGET
+  diff ${SRC} ${TARGET}
   if [ $? -eq 0 ]; then
     echo no change
   else
-    install -m 0644 -o $USER -g $THIS_GROUP -v $SRC $TARGET
+    install -m 0644 -o ${USER} -g ${THIS_GROUP} -v ${SRC} ${TARGET}
   fi
-  $CMD
+  ${CMD}
 }
 
 update_system () {
-  THIS_HOST=$(hostname)
-  SRC="${NX_DIR}/hosts/$THIS_HOST"
-  cd $SRC
-  sudo rm -v $SRC/flake.lock
+  get_this_host
+  SRC="${NX_DIR}/hosts/${THIS_HOST}"
+  if [ -f "${SRC}/flake.lock" ]; then
+    cd ${SRC}
+    sudo rm -v "${SRC}/flake.lock"
+  elif [ -f "${NX_DIR}/flake.lock" ]; then
+    cd ${NX_DIR}
+    sudo rm -v "${SRC}/flake.lock"
+  elif [ -f "/etc/nixos/flake.lock" ]; then
+    cd /etc/nixos
+    sudo rm -v "/etc/nixos/flake.lock"
+  fi
   set -x
   sudo nix-channel --update
   nix flake update
@@ -265,20 +291,19 @@ worker_colmena () {
     reboot_arg=''
   fi
   THIS_GROUP=$1
-  SRC="${NX_DIR}/groups/$THIS_GROUP"
+  SRC="${NX_DIR}/groups/${THIS_GROUP}"
   if [ -z $2 ]; then
     on_args=""
   else
     on_args="--on $2"
   fi
-  cd $SRC
+  cd ${SRC}
   set -x
-  colmena apply switch $reboot_arg $on_args
+  colmena apply switch ${reboot_arg} ${on_args}
   set +x
 }
 
-apply_system () {
-  check_git_status
+get_this_host () {
   if [ ! -z ${HOSTNAME} ]; then
     THIS_HOST=${HOSTNAME}
   else
@@ -288,20 +313,28 @@ apply_system () {
     echo 'no hostname not sure what to do, bailing out!'
     exit 1
   fi
+}
+
+find_flake_nix_dir () {
+  get_this_host
   SRC="${NX_DIR}/hosts/${THIS_HOST}"
   if [ -f "${SRC}/flake.nix" ]; then
-    set -x
-    sudo nixos-rebuild switch --flake "${SRC}#${THIS_HOST}"
+    check_git_status
+    flake_nix_dir=${SRC}
   elif [ -f "${NX_DIR}/flake.nix" ]; then
-    set -x
-    sudo nixos-rebuild switch --flake "${NX_DIR}#${THIS_HOST}"
-  elif [ -f "/etc/nixox/flake.nix" ]; then
-    set -x
-    sudo nixos-rebuild switch --flake "/etc/nixos/#${THIS_HOST}"
+    check_git_status
+    flake_nix_dir=${NX_DIR}
+  elif [ -f "/etc/nixos/flake.nix" ]; then
+    flake_nix_dir=/etc/nixos
   else
     echo 'cannot find flake.nix, bailing out'
     exit 1
   fi
+}
+
+apply_system () {
+  find_flake_nix_dir
+  sudo nixos-rebuild switch --flake "${flake_nix_dir}#${THIS_HOST}"
 }
 
 old_apply_system () {
@@ -313,21 +346,21 @@ old_apply_system () {
   check_git_status
   THIS_USER=root
   THIS_GROUP=root
-  THIS_HOST=$(hostname)
-  SRC="${NX_DIR}/hosts/$THIS_HOST"
+  get_this_host
+  SRC="${NX_DIR}/hosts/${THIS_HOST}"
   if [ -d "${SRC}" ]; then
     TARGET="/etc/nixos"
     CMD="sudo nixos-rebuild switch"
-    diff $SRC $TARGET
+    diff ${SRC} ${TARGET}
     if [ $? -eq 0 ]; then
       echo no change
     else
-      sudo rsync -v --chown root:root --chmod 0644 $SRC/* $TARGET/
+      sudo rsync -v --chown root:root --chmod 0644 ${SRC}/* ${TARGET}/
     fi
     set -x
-    $CMD
+    ${CMD}
   else
-    echo "cannot find directory $SRC, bailing out"
+    echo "cannot find directory ${SRC}, bailing out"
     exit 1
   fi
 }
@@ -354,7 +387,7 @@ check_git_status () {
       commy=$(printf "force lock\n%s\n" $(date -I))
       commy+="$(git diff)"
       git commit -am "${commy}"
-    elif [ "$use_the_force_luke" = 'true' ]; then
+    elif [ "${use_the_force_luke}" = 'true' ]; then
       echo 'using the force'
     else
       echo 'use --force or --commit to override'
@@ -388,23 +421,23 @@ squawk () {
   # if the current verbosity level is greater than or equal to
   # the number given then this function will echo out your message
   # and pad it with # to let you now how verbose that message was
-  squawk_lvl="$1"
+  squawk_lvl=$1
   shift
   squawk="$@"
 
-  if [[ "$VERBOSITY" -ge "$squawk_lvl" ]] ; then
-    if [[ "$squawk_lvl" -le 20 ]] ; then
+  if [ ${VERBOSITY} -gt ${squawk_lvl} ] ; then
+    if [ ${squawk_lvl} -lt 20 ] ; then
       count_squawk=0
-      while [[ "$count_squawk" -lt "$squawk_lvl" ]]; do
+      while [ ${count_squawk} -lt ${squawk_lvl} ]; do
         printf '#'
-        ((++count_squawk))
+	count_squawk=$((count_squawk+1))
       done
-      printf ' %s\n' "$squawk"
+      printf ' %s\n' "${squawk}"
     else
       printf '#>{ '
-      printf '%s' "$squawk_lvl"
+      printf '%s' "${squawk_lvl}"
       printf ' }<# '
-      printf ' %s\n' "$squawk"
+      printf ' %s\n' "${squawk}"
     fi
   fi
 }
