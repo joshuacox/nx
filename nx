@@ -71,6 +71,9 @@ parse_opts () {
   RAISON=$1
   squawk 5 "Raison set to $RAISON"
   shift
+  if [[ "$debug" = "true" ]]; then
+    set -x
+  fi
 
 
   if [[ $RAISON = "false" || "$RAISON" = "help" ]]; then
@@ -286,15 +289,14 @@ apply_system () {
     exit 1
   fi
   SRC="${NX_DIR}/hosts/${THIS_HOST}"
-  if [ -d "${SRC}" ]; then
-    if [ -f "${NX_DIR}/flake.nix" ]; then
+  if [ -f "${SRC}/flake.nix" ]; then
     set -x
     sudo nixos-rebuild switch --flake "${SRC}#${THIS_HOST}"
-    set +x
-    fi
   elif [ -f "${NX_DIR}/flake.nix" ]; then
+    set -x
     sudo nixos-rebuild switch --flake "${NX_DIR}#${THIS_HOST}"
   elif [ -f "/etc/nixox/flake.nix" ]; then
+    set -x
     sudo nixos-rebuild switch --flake "/etc/nixos/#${THIS_HOST}"
   else
     echo 'cannot find flake.nix, trying the old method'
