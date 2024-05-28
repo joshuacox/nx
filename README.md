@@ -110,6 +110,18 @@ Then I added another machine that I was installing nix on, to separate things ou
 sudo nixos-rebuild switch --flake $src#$hostname
 ```
 
+Which leads to the next section....
+
+### order of precedence when searching for flake.nix
+
+nx will search for a flake.nix in the following order, with the NX_DIR defaulting to `$HOME/.nx`
+
+```
+$NX_DIR/$(hostname)/flake.nix
+$NX_DIR/flake.nix
+/etc/nixos/flake.nix
+```
+
 There are a few convenience functions added like:
 
 `nx s gimp` which simplifies the lengthy amount of options that must be fed to nix to get it to search. for example the equivalent nix is:

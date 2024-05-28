@@ -299,13 +299,17 @@ apply_system () {
     set -x
     sudo nixos-rebuild switch --flake "/etc/nixos/#${THIS_HOST}"
   else
-    echo 'cannot find flake.nix, trying the old method'
-    old_apply_system 
+    echo 'cannot find flake.nix, bailing out'
+    exit 1
   fi
 }
 
 old_apply_system () {
   # this was used before the above flake method
+  # and merely left for historal context
+  # I had thought about falling back to it from the above
+  # newer apply_system, but I think it would need some reworking
+  # for now it's deprecated
   check_git_status
   THIS_USER=root
   THIS_GROUP=root
