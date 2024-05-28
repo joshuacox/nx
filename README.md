@@ -104,7 +104,11 @@ Then I added a helper to edit the configuration.
 
 `nx ec`
 
-Then I added another machine that I was installing nix on, to separate things out I made a hosts directory and started choosing the right confg file to be editing or applying based on the output of `hostname`.
+Then I added another machine that I was installing nix on, to separate things out I made a hosts directory and started choosing the right confg file to be editing or applying based on the output of `hostname`.  This just led to me maintaining more duplicate sets of code, so I will have the script fallback to using a default flake.nx at the top of the ~/.nx directory if no matching host directory is found, ultimately falling back to /etc/nixos if both of those are non-existant, and will then apply the hostname after the hashtag. e.g.
+
+```
+sudo nixos-rebuild switch --flake $src#$hostname
+```
 
 There are a few convenience functions added like:
 

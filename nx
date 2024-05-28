@@ -276,12 +276,30 @@ worker_colmena () {
 
 apply_system () {
   check_git_status
-  THIS_HOST=$(hostname)
-  SRC="${NX_DIR}/hosts/$THIS_HOST"
-  cd $SRC
-  set -x
-  sudo nixos-rebuild switch --flake '.#'
-  set +x
+  if [ ! -z ${HOSTNAME} ]; then
+    THIS_HOST=${HOSTNAME}
+  else
+    THIS_HOST=$(hostname)
+  fi
+  if [ -z "${THIS_HOST}" ]; then
+    echo 'no hostname not sure what to do, bailing out!'
+    exit 1
+  fi
+  SRC="${NX_DIR}/hosts/${THIS_HOST}"
+  if [ -d "${SRC}" ]; then
+    if [ -f "${NX_DIR}/flake.nix" ]; then
+    set -x
+    sudo nixos-rebuild switch --flake "${SRC}#${THIS_HOST}"
+    set +x
+    fi
+  elif [ -f "${NX_DIR}/flake.nix" ]; then
+    sudo nixos-rebuild switch --flake "${NX_DIR}#${THIS_HOST}"
+  elif [ -f "/etc/nixox/flake.nix" ]; then
+    sudo nixos-rebuild switch --flake "/etc/nixos/#${THIS_HOST}"
+  else
+    echo 'cannot find flake.nix, trying the old method'
+    old_apply_system 
+  fi
 }
 
 old_apply_system () {
@@ -291,16 +309,21 @@ old_apply_system () {
   THIS_GROUP=root
   THIS_HOST=$(hostname)
   SRC="${NX_DIR}/hosts/$THIS_HOST"
-  TARGET="/etc/nixos"
-  CMD="sudo nixos-rebuild switch"
-  diff $SRC $TARGET
-  if [ $? -eq 0 ]; then
-    echo no change
+  if [ -d "${SRC}" ]; then
+    TARGET="/etc/nixos"
+    CMD="sudo nixos-rebuild switch"
+    diff $SRC $TARGET
+    if [ $? -eq 0 ]; then
+      echo no change
+    else
+      sudo rsync -v --chown root:root --chmod 0644 $SRC/* $TARGET/
+    fi
+    set -x
+    $CMD
   else
-    sudo rsync -v --chown root:root --chmod 0644 $SRC/* $TARGET/
+    echo "cannot find directory $SRC, bailing out"
+    exit 1
   fi
-  set -x
-  $CMD
 }
 
 full_auto () {
