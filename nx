@@ -216,6 +216,8 @@ apply_user () {
   check_git_status
   THIS_GROUP=users
   get_this_host
+  TARGET="${HOME}/.config/home-manager/home.nix"
+  CMD="home-manager switch"
   if [ -f "${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix" ]; then
     SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
   elif [ -f "${NX_DIR}/users/${USER}/home.nix" ]; then
@@ -227,9 +229,6 @@ apply_user () {
     ls -alh ${SRC}
     echo 'Cannot find user home.nix'
   fi
-  SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
-  TARGET="${HOME}/.config/home-manager/home.nix"
-  CMD="home-manager switch"
   set -x
   diff ${SRC} ${TARGET}
   if [ $? -eq 0 ]; then
