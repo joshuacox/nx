@@ -115,7 +115,7 @@ parse_opts () {
   elif [[ $RAISON == "us" ]]; then
     update_system
   elif [[ $RAISON == "uu" ]]; then
-    nix-channel --update
+    update_user
   elif [[ $RAISON == "o" ]]; then
     time optimizer
   elif [[ $RAISON == "test" ]]; then
@@ -237,6 +237,10 @@ apply_user () {
     install -m 0644 -o ${USER} -g ${THIS_GROUP} -v ${SRC} ${TARGET}
   fi
   ${CMD}
+}
+
+update_user () {
+  nix-channel --update
 }
 
 update_system () {
@@ -365,9 +369,8 @@ old_apply_system () {
 }
 
 full_auto () {
-  nix-channel --update
+  update_user
   update_system
-  check_git_status
   apply_system $@
   apply_user $@
   garbage_collector $@
