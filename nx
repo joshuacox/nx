@@ -250,11 +250,13 @@ update_system () {
     cd ${SRC}
     sudo rm -v "${SRC}/flake.lock"
   elif [ -f "${NX_DIR}/flake.lock" ]; then
-    cd ${NX_DIR}
+    SRC="${NX_DIR}"
+    cd ${SRC}
     sudo rm -v "${SRC}/flake.lock"
   elif [ -f "/etc/nixos/flake.lock" ]; then
-    cd /etc/nixos
-    sudo rm -v "/etc/nixos/flake.lock"
+    SRC=/etc/nixos
+    cd ${NX_DIR}
+    sudo rm -v "${SRC}/flake.lock"
   fi
   set -x
   sudo nix-channel --update
