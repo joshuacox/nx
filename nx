@@ -109,9 +109,7 @@ parse_opts () {
   elif [[ $RAISON == "eu" ]]; then
     edit_user_config $@
   elif [[ $RAISON == "am" ]]; then
-    cd "${NX_DIR}"
-    set -x
-    git commit -am "$1" 
+    make_a_commit $@
   elif [[ $RAISON == "us" ]]; then
     update_system
   elif [[ $RAISON == "uu" ]]; then
@@ -195,6 +193,28 @@ edit_user_config () {
   fi
   SRC="${USER_DIR}/home.nix"
   ${EDITOR} ${SRC}
+}
+
+auto_commit () {
+  cd "${NX_DIR}"
+  if ! command -v aicommits &> /dev/null
+    aicommits
+  then
+    commy=$(printf "force lock\n%s\n" $(date -I))
+    commy+="$(git diff)"
+    set -x
+    git commit -am "${commy}"
+  fi
+}
+
+make_a_commit () {
+  if [ $# -eq 0 ]
+    auto_commit
+  else
+    cd "${NX_DIR}"
+    set -x
+    git commit -am "$@" 
+  fi
 }
 
 defunct_apply_user () {
@@ -388,9 +408,7 @@ check_git_status () {
     # Uncommitted changes
     echo "There are uncommitted changes!"
     if [ "$commit" = 'true' ]; then
-      commy=$(printf "force lock\n%s\n" $(date -I))
-      commy+="$(git diff)"
-      git commit -am "${commy}"
+      auto_commit
     elif [ "${use_the_force_luke}" = 'true' ]; then
       echo 'using the force'
     else
