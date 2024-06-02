@@ -198,7 +198,7 @@ edit_user_config () {
 auto_commit () {
   cd "${NX_DIR}"
   if ! command -v aicommits &> /dev/null
-    aicommits
+    aicommits -a -g 5
   then
     commy=$(printf "force lock\n%s\n" $(date -I))
     commy+="$(git diff)"
