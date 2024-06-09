@@ -234,22 +234,20 @@ defunct_apply_user () {
   ./result/activate
 }
 
-apply_user () {
-  check_git_status
+find_userconfigs () {
+  INPUT_ARG=$1
   THIS_GROUP=users
-  get_this_host
-  TARGET="${HOME}/.config/home-manager/home.nix"
-  CMD="home-manager switch"
-  if [ -f "${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix" ]; then
-    SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
-  elif [ -f "${NX_DIR}/users/${USER}/home.nix" ]; then
-    SRC="${NX_DIR}/users/${USER}/home.nix"
+  TARGET="${HOME}/.config/home-manager/$INPUT_ARG"
+  if [ -f "${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/$INPUT_ARG" ]; then
+    SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/$INPUT_ARG"
+  elif [ -f "${NX_DIR}/users/${USER}/$INPUT_ARG" ]; then
+    SRC="${NX_DIR}/users/${USER}/$INPUT_ARG"
   else
-    SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/home.nix"
+    SRC="${NX_DIR}/hosts/${THIS_HOST}/users/${USER}/$INPUT_ARG"
     ls -alh ${SRC}
-    SRC="${NX_DIR}/users/${USER}/home.nix"
+    SRC="${NX_DIR}/users/${USER}/$INPUT_ARG"
     ls -alh ${SRC}
-    echo 'Cannot find user home.nix'
+    echo "Cannot find user $INPUT_ARG"
   fi
   set -x
   diff ${SRC} ${TARGET}
@@ -258,6 +256,14 @@ apply_user () {
   else
     install -m 0644 -o ${USER} -g ${THIS_GROUP} -v ${SRC} ${TARGET}
   fi
+}
+
+apply_user () {
+  CMD="home-manager switch"
+  check_git_status
+  get_this_host
+  find_userconfigs home.nix
+  find_userconfigs config.nu
   ${CMD}
 }
 
