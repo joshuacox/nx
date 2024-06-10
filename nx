@@ -1,5 +1,6 @@
 #!/bin/sh
 : ${NX_DIR:="${HOME}/.nx"}
+: ${NICER:="nice -n11 ionice -c3 "}
 : ${VERBOSITY:=0}
 
 set_verbosity () {
@@ -287,8 +288,8 @@ update_system () {
     sudo rm -v "${SRC}/flake.lock"
   fi
   set -x
-  sudo nix-channel --update
-  nix flake update
+  $NICER sudo nix-channel --update
+  $NICER nix flake update
   #nix build --recreate-lock-file
   set +x
 }
@@ -399,12 +400,16 @@ old_apply_system () {
 }
 
 full_auto () {
-  update_user
+ # moving away from HM 
+ # for personal use
+ # might remove these lines altogether
+ # or make a flag for them
+ # update_user
+ # apply_user $@
   update_system
   apply_system $@
-  apply_user $@
   garbage_collector $@
-  nix-store --optimize
+  $NICER nix-store --optimize
 }
 
 check_git_status () {
@@ -427,20 +432,20 @@ check_git_status () {
 }
 
 garbage_collector ()  {
-  nix-env --delete-generations old
-  nix-store --gc
+  $NICER nix-env --delete-generations old
+  $NICER nix-store --gc
   #nix-channel --update
   #nix-env -u --always
   #for link in /nix/var/nix/gcroots/auto/*
   #do
   #  sudo rm $(readlink "$link")
   #done
-  nix-collect-garbage -d
+  $NICER nix-collect-garbage -d
 }
 
 optimizer () {
-  nix-store --optimize
-  garbage_collector $@
+  $NICER nix-store --optimize
+  $NICER garbage_collector $@
 }
 
 squawk () {
