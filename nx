@@ -272,20 +272,31 @@ update_user () {
   nix-channel --update
 }
 
+rm321 () {
+  if [ -f "${SRC}/flake.nix" ]; then
+    sudo rm -v "${SRC}/flake.lock"
+  else
+    echo 'no lock file, proceeding'
+  fi
+}
+
 update_system () {
   get_this_host
   SRC="${NX_DIR}/hosts/${THIS_HOST}"
-  if [ -f "${SRC}/flake.lock" ]; then
+  if [ -f "${SRC}/flake.nix" ]; then
     cd ${SRC}
-    sudo rm -v "${SRC}/flake.lock"
-  elif [ -f "${NX_DIR}/flake.lock" ]; then
+    rm321
+  elif [ -f "${NX_DIR}/flake.nix" ]; then
     SRC="${NX_DIR}"
     cd ${SRC}
-    sudo rm -v "${SRC}/flake.lock"
-  elif [ -f "/etc/nixos/flake.lock" ]; then
+    rm321
+  elif [ -f "/etc/nixos/flake.nix" ]; then
     SRC=/etc/nixos
-    cd ${NX_DIR}
-    sudo rm -v "${SRC}/flake.lock"
+    cd ${SRC}
+    rm321
+  else
+    echo "I cannot find the system flake.nix! NX_DIR=$NX_DIR host $THIS_HOST"
+    exit 1
   fi
   set -x
   $NICER sudo nix-channel --update
@@ -445,7 +456,7 @@ garbage_collector ()  {
 
 optimizer () {
   $NICER nix-store --optimize
-  $NICER garbage_collector $@
+  garbage_collector $@
 }
 
 squawk () {
