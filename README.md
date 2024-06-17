@@ -122,6 +122,20 @@ $NX_DIR/flake.nix
 /etc/nixos/flake.nix
 ```
 
+#### debug
+
+Adding in a --debug flag will give extra verbosity
+
+#### force
+
+Adding in a --force flag will cause many of the git checks to be proceeded over, and in the case of the nixos-rebuild command it will cause it to ingore the eval cache as described in this [issue](https://discourse.nixos.org/t/error-cached-failure-of-attribute-nixosconfigurations-framework-config-system-build-toplevel/35451).
+
+#### commit
+
+Adding in a --commit flag will attempt to make an automatic commit.
+
+#### convenience
+
 There are a few convenience functions added like:
 
 `nx s gimp` which simplifies the lengthy amount of options that must be fed to nix to get it to search. for example the equivalent nix is:
