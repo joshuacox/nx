@@ -93,39 +93,39 @@ parse_opts () {
     exit 1
   fi
 
-  if [[ $RAISON == "s" ]]; then
+  if [ $RAISON = "s" ]; then
     nix_search $@
-  elif [[ $RAISON == "ac" ]]; then
+  elif [ $RAISON = "ac" ]; then
     time apply_colmena $@
-  elif [[ $RAISON == "as" ]]; then
+  elif [ $RAISON = "as" ]; then
     time apply_system $@
-  elif [[ $RAISON == "au" ]]; then
+  elif [ $RAISON = "au" ]; then
     time apply_user $@
-  elif [[ $RAISON == "gc" ]]; then
+  elif [ $RAISON = "gc" ]; then
     time garbage_collector $@
-  elif [[ $RAISON == "ec" ]]; then
+  elif [ $RAISON = "ec" ]; then
     edit_config $@
-  elif [[ $RAISON == "ef" ]]; then
+  elif [ $RAISON = "ef" ]; then
     edit_flake $@
-  elif [[ $RAISON == "eu" ]]; then
+  elif [ $RAISON = "eu" ]; then
     edit_user_config $@
-  elif [[ $RAISON == "am" ]]; then
+  elif [ $RAISON = "am" ]; then
     make_a_commit $@
-  elif [[ $RAISON == "us" ]]; then
+  elif [ $RAISON = "us" ]; then
     update_system
-  elif [[ $RAISON == "uu" ]]; then
+  elif [ $RAISON = "uu" ]; then
     update_user
-  elif [[ $RAISON == "o" ]]; then
+  elif [ $RAISON = "o" ]; then
     time optimizer
-  elif [[ $RAISON == "test" ]]; then
+  elif [ $RAISON = "test" ]; then
     echo ok
     exit 0
-  elif [[ $RAISON == "auto" ]]; then
+  elif [ $RAISON = "auto" ]; then
     full_auto
   else
     squawk 8 'passthru'
     # Else fall through to passing on to nix 
-    if [[ $print_help == "true" ]]; then
+    if [ $print_help = "true" ]; then
       horizontal_rule
       usage
       exit 1
@@ -134,7 +134,7 @@ parse_opts () {
     nix $RAISON $@
   fi
 
-  if [[ $print_help == "true" ]]; then
+  if [ "${print_help}" = "true" ]; then
     horizontal_rule
     usage
     exit 1
@@ -378,8 +378,19 @@ find_flake_nix_dir () {
 }
 
 apply_system () {
+  if [ "${debug}" = 'true' ]; then
+    debug_flags='--show-trace'
+  else
+    debug_flags=' '
+  fi
+  if [ "${use_the_force_luke}" = 'true' ]; then
+    force_flags='--option eval-cache false'
+  else
+    force_flags=' '
+  fi
+
   find_flake_nix_dir
-  sudo nixos-rebuild switch --flake "${flake_nix_dir}#${THIS_HOST}"
+  sudo nixos-rebuild switch --flake "${flake_nix_dir}#${THIS_HOST}" $debug_flags $force_flags
 }
 
 old_apply_system () {
@@ -419,8 +430,7 @@ full_auto () {
  # apply_user $@
   update_system
   apply_system $@
-  garbage_collector $@
-  $NICER nix-store --optimize
+  optimizer
 }
 
 check_git_status () {
