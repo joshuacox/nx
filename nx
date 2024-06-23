@@ -102,7 +102,11 @@ parse_opts () {
     show_help
   fi
 
-  if [ $RAISON = "s" ]; then
+  if [ $RAISON = "p" ]; then
+    cd ${NX_DIR} && git pull
+  elif [ $RAISON = "P" ]; then
+    cd ${NX_DIR} && git push
+  elif [ $RAISON = "s" ]; then
     nix_search $@
   elif [ $RAISON = "ac" ]; then
     time apply_colmena $@
