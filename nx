@@ -159,6 +159,8 @@ usage () {
   printf "nx is an opinionated tool I use to manage my NixOS installations.\n"
   printf "by default it uses a directory in your home '~/.nx'\n"
   printf "USAGE:\n"
+  printf "git pull:\t\tnx p GROUP\n"
+  printf "git push:\t\tnx P GROUP\n"
   printf "apply-colmena:\t\tnx ac GROUP\n"
   printf "apply-colmena:\t\tnx ac GROUP --reboot\n"
   printf "apply-colmena:\t\tnx ac GROUP --reboot host1,host2,host3\n"
