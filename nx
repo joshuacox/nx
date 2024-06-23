@@ -118,6 +118,8 @@ parse_opts () {
     time garbage_collector $@
   elif [ $RAISON = "ec" ]; then
     edit_config $@
+  elif [ $RAISON = "e" ]; then
+    edit_flake $@
   elif [ $RAISON = "ef" ]; then
     edit_flake $@
   elif [ $RAISON = "eu" ]; then
@@ -159,25 +161,28 @@ usage () {
   printf "nx is an opinionated tool I use to manage my NixOS installations.\n"
   printf "by default it uses a directory in your home '~/.nx'\n"
   printf "USAGE:\n"
-  printf "git pull:\t\tnx p GROUP\n"
-  printf "git push:\t\tnx P GROUP\n"
   printf "apply-colmena:\t\tnx ac GROUP\n"
   printf "apply-colmena:\t\tnx ac GROUP --reboot\n"
   printf "apply-colmena:\t\tnx ac GROUP --reboot host1,host2,host3\n"
   printf "apply-colmena:\t\tnx ac GROUP host1 host2,host3 host4,host5,host6\n"
-  printf "apply-system:\t\tnx as\n"
   printf "git-commit-am:\t\tnx am\n"
   printf "apply-user:\t\tnx au\n"
   printf "full-auto:\t\tnx auto\n"
-  printf "edit-config:\t\tnx ec\n"
-  printf "edit-flake:\t\tnx ef\n"
-  printf "edit-group-flake:\tnx ef GROUP\n"
-  printf "edit-user-config:\tnx eu\n"
   printf "garbage-collector:\tnx gc\n"
-  printf "optimize+gc:\t\tnx o\n"
-  printf "search PACKAGE:\t\tnx s PACKAGE\n"
   printf "update-system:\t\tnx us\n"
   printf "update-user:\t\tnx uu\n"
+  printf "edit-group-flake:\tnx ef GROUP\n"
+  printf "edit-user-config:\tnx eu\n"
+  printf "edit-flake:\t\tnx e\n"
+  printf "edit-config:\t\tnx ec\n"
+  printf "optimize+gc:\t\tnx o\n"
+  printf "git pull:\t\tnx p GROUP\n"
+  printf "git push:\t\tnx P GROUP\n"
+  printf "search PACKAGE:\t\tnx s PACKAGE\n"
+}
+
+deprecated_usage () {
+  printf "apply-system:\t\tnx as\n"
 }
 
 edit_config () {
