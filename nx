@@ -5,6 +5,7 @@
 : ${print_help:='false'}
 : ${debug:='false'}
 : ${use_the_force_luke:='false'}
+: ${commit:='false'}
 # If cmd empty enter interactive session
 usage () {
   printf "nx - one less letter to type than nix\n"
@@ -461,7 +462,7 @@ check_git_status () {
   else 
     # Uncommitted changes
     echo "There are uncommitted changes!"
-    if [ "$commit" = 'true' ]; then
+    if [ "${commit}" = 'true' ]; then
       auto_commit
     elif command -v lazygit &> /dev/null ; then
       lazygit
