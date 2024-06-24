@@ -359,11 +359,13 @@ worker_colmena () {
   fi
   THIS_GROUP=$1
   SRC="${NX_DIR}/groups/${THIS_GROUP}"
+  set +u
   if [ -z $2 ]; then
     on_args=""
   else
     on_args="--on $2"
   fi
+  set -u
   cd ${SRC}
   set -x
   colmena apply switch ${reboot_arg} ${on_args}
