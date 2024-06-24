@@ -6,6 +6,7 @@
 : ${debug:='false'}
 : ${use_the_force_luke:='false'}
 : ${commit:='false'}
+: ${reboot:='false'}
 # If cmd empty enter interactive session
 usage () {
   printf "nx - one less letter to type than nix\n"
@@ -341,7 +342,7 @@ apply_colmena () {
     uber_group="$1"
     shift
     while [ ! -z "$1" ]; do
-      worker_colmena $uber_group "$1"
+      worker_colmena ${uber_group} "$1"
       shift
     done
   else
