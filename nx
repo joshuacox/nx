@@ -341,10 +341,13 @@ apply_colmena () {
   elif [ $# -gt 1 ]; then
     uber_group="$1"
     shift
+    set +u
     while [ ! -z "$1" ]; do
       worker_colmena ${uber_group} "$1"
       shift
+      set +u
     done
+    set -u
   else
     echo 'unknown conditions bailing out'
     exit 1
